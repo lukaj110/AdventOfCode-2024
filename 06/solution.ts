@@ -36,7 +36,9 @@ const startColIndex = board[startRowIndex].findIndex((e) => e === "^");
 
 let currentPosition: [number, number] = [startRowIndex, startColIndex];
 
-const visitedPositions: [number, number][] = [currentPosition];
+const visitedPositions: Set<string> = new Set([
+  `${currentPosition[0]},${currentPosition[1]}`,
+]);
 
 while (
   getNextPosition(board, currentPosition, directions[currentDirectionIndex])
@@ -58,26 +60,22 @@ while (
     ];
   }
 
-  if (
-    !visitedPositions.some(
-      (visitedPosition) =>
-        visitedPosition[0] === currentPosition[0] &&
-        visitedPosition[1] === currentPosition[1]
-    )
-  ) {
-    visitedPositions.push(currentPosition);
+  const stateKey = `${currentPosition[0]},${currentPosition[1]}`;
+
+  if (!visitedPositions.has(stateKey)) {
+    visitedPositions.add(stateKey);
   }
 }
 
-console.log(visitedPositions.length);
+console.log([...visitedPositions.entries()].length);
 
-// Part 2 - Takes about 10 seconds
+// Part 2 - Takes about 2 seconds after performance improvements
 
 let timeLoopCount = 0;
 
 for (let i = 0; i < board.length; i++) {
   for (let j = 0; j < board[i].length; j++) {
-    if (board[i][j] !== ".") continue;
+    if (board[i][j] !== "." || !visitedPositions.has(`${i},${j}`)) continue;
 
     const visited = new Set<string>();
 
