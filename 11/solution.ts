@@ -6,34 +6,39 @@ const stones = input.split(" ");
 
 // Part 1
 
-const stonesMap: Map<string, number> = new Map();
+const stonesMap: Map<number, number> = new Map();
 
-function initialize(map: Map<string, number>, stones: string[]) {
+function initialize(map: Map<number, number>, stones: string[]) {
   for (const stone of stones) {
-    const mappedStone = map.get(stone);
+    const parsedStone = parseInt(stone);
+
+    const mappedStone = map.get(parsedStone);
+
     if (!mappedStone) {
-      map.set(stone, 1);
+      map.set(parsedStone, 1);
     } else {
-      map.set(stone, mappedStone + 1);
+      map.set(parsedStone, mappedStone + 1);
     }
   }
 }
 
-function doBlink(stonesMap: Map<string, number>) {
+function doBlink(stonesMap: Map<number, number>) {
   for (const [stone, count] of [...stonesMap.entries()]) {
     if (count === 0) continue;
 
-    if (stone == "0") {
-      const oneStoneCount = stonesMap.get("1");
-      stonesMap.set("1", (oneStoneCount ?? 0) + count);
+    const stoneString = stone.toString();
+
+    if (stone == 0) {
+      const oneStoneCount = stonesMap.get(1);
+      stonesMap.set(1, (oneStoneCount ?? 0) + count);
 
       const currentCount = stonesMap.get(stone)!;
       stonesMap.set(stone, currentCount - count);
-    } else if (stone.length % 2 === 0) {
-      const halfIndex = stone.length / 2;
+    } else if (stoneString.length % 2 === 0) {
+      const halfIndex = stoneString.length / 2;
 
-      const firstHalf = (+stone.slice(0, halfIndex)).toString();
-      const secondHalf = (+stone.slice(halfIndex)).toString();
+      const firstHalf = Math.floor(stone / Math.pow(10, halfIndex));
+      const secondHalf = Math.floor(stone % Math.pow(10, halfIndex));
 
       const firstHalfCount = stonesMap.get(firstHalf);
       stonesMap.set(firstHalf, (firstHalfCount ?? 0) + count);
@@ -44,7 +49,7 @@ function doBlink(stonesMap: Map<string, number>) {
       const currentCount = stonesMap.get(stone)!;
       stonesMap.set(stone, currentCount - count);
     } else {
-      const newStone = (parseInt(stone, 10) * 2024).toString();
+      const newStone = stone * 2024;
 
       const newStoneCount = stonesMap.get(newStone);
       stonesMap.set(newStone, (newStoneCount ?? 0) + count);
@@ -55,7 +60,7 @@ function doBlink(stonesMap: Map<string, number>) {
   }
 }
 
-function blinkTimes(stonesMap: Map<string, number>, count: number) {
+function blinkTimes(stonesMap: Map<number, number>, count: number) {
   for (let i = 0; i < count; i++) doBlink(stonesMap);
 }
 
