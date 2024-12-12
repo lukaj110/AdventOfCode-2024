@@ -2,18 +2,13 @@
 
 const input = await Deno.readTextFile("./input.txt");
 
-const stones = input.split(" ").map((e) => parseInt(e));
+const stones = input.split(" ").map(Number);
 
 // Part 1
 
 const stonesMap: Map<number, number> = new Map();
 
-stones.forEach((stone) => {
-  const mappedStone = stonesMap.get(stone);
-
-  if (!mappedStone) stonesMap.set(stone, 1);
-  else stonesMap.set(stone, mappedStone + 1);
-});
+stones.forEach((stone) => stonesMap.set(stone, stonesMap.get(stone) ?? 0 + 1));
 
 function doBlink(stonesMap: Map<number, number>) {
   for (const [stone, count] of [...stonesMap.entries()]) {
@@ -29,8 +24,8 @@ function doBlink(stonesMap: Map<number, number>) {
 
       if (stoneString.length % 2 === 0) {
         const halfIndex = stoneString.length / 2;
-        const firstHalf = Math.floor(stone / Math.pow(10, halfIndex));
-        const secondHalf = Math.floor(stone % Math.pow(10, halfIndex));
+        const firstHalf = Math.floor(stone / 10 ** halfIndex);
+        const secondHalf = Math.floor(stone % 10 ** halfIndex);
 
         const firstHalfCount = stonesMap.get(firstHalf) ?? 0;
         stonesMap.set(firstHalf, firstHalfCount + count);
