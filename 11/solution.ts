@@ -20,52 +20,39 @@ function initialize(map: Map<string, number>, stones: string[]) {
 }
 
 function doBlink(stonesMap: Map<string, number>) {
-  const tempMap = new Map(stonesMap);
-
   for (const [stone, count] of [...stonesMap.entries()]) {
     if (count === 0) continue;
 
     if (stone == "0") {
-      const oneStoneCount = tempMap.get("1");
+      const oneStoneCount = stonesMap.get("1");
+      stonesMap.set("1", (oneStoneCount ?? 0) + count);
 
-      tempMap.set("1", (oneStoneCount ?? 0) + count);
-
-      const currentCount = tempMap.get(stone)!;
-
-      tempMap.set(stone, currentCount - count);
+      const currentCount = stonesMap.get(stone)!;
+      stonesMap.set(stone, currentCount - count);
     } else if (stone.length % 2 === 0) {
-      const text = stone.split("");
+      const halfIndex = stone.length / 2;
 
-      const firstHalf = text.slice(0, text.length / 2).join("");
-      const secondHalf = text.slice(text.length / 2).join("");
+      const firstHalf = (+stone.slice(0, halfIndex)).toString();
+      const secondHalf = (+stone.slice(halfIndex)).toString();
 
-      const firstHalfString = parseInt(firstHalf, 10).toString();
-      const secondHalfString = parseInt(secondHalf, 10).toString();
+      const firstHalfCount = stonesMap.get(firstHalf);
+      stonesMap.set(firstHalf, (firstHalfCount ?? 0) + count);
 
-      const firstHalfCount = tempMap.get(firstHalfString);
-      const secondHalfCount = tempMap.get(secondHalfString);
+      const secondHalfCount = stonesMap.get(secondHalf);
+      stonesMap.set(secondHalf, (secondHalfCount ?? 0) + count);
 
-      tempMap.set(firstHalfString, (firstHalfCount ?? 0) + count);
-      tempMap.set(secondHalfString, (secondHalfCount ?? 0) + count);
-
-      const currentCount = tempMap.get(stone)!;
-      tempMap.set(stone, currentCount - count);
+      const currentCount = stonesMap.get(stone)!;
+      stonesMap.set(stone, currentCount - count);
     } else {
       const newStone = (parseInt(stone, 10) * 2024).toString();
 
-      const newStoneCount = tempMap.get(newStone);
+      const newStoneCount = stonesMap.get(newStone);
+      stonesMap.set(newStone, (newStoneCount ?? 0) + count);
 
-      tempMap.set(newStone, (newStoneCount ?? 0) + count);
-
-      const currentCount = tempMap.get(stone)!;
-
-      tempMap.set(stone, currentCount - count);
+      const currentCount = stonesMap.get(stone)!;
+      stonesMap.set(stone, currentCount - count);
     }
   }
-
-  stonesMap.clear();
-
-  tempMap.forEach((value, key) => stonesMap.set(key, value));
 }
 
 function blinkTimes(stonesMap: Map<string, number>, count: number) {
